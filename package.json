@@ -10,7 +10,7 @@
     "start": "node dist/server.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Heiðar Hlöðversson",
   "license": "ISC",
   "type": "module",
   "dependencies": {
