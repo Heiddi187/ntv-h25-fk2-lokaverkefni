@@ -16,3 +16,18 @@ export const errorHandler = (
         message: err.message || 'Something went wrong on the server'
     });
 };
+
+// export const errorHandlerFromUdemy = (
+//     err,
+//     req,
+//     res, 
+//     next: 
+// )=> {
+//     err.status = err.statusCode || 500;
+//     err.status = err.status || 'error';
+
+//     res.status(err.statusCode).json({
+//         status: err.status,
+//         message: err.message
+//     })
+// }

@@ -1,0 +1,36 @@
+[
+    {
+        "name": "Event 1",
+        "venue": "venue 1",
+        "description": "description for event 1",
+        "date": "sometime",
+        "duration": 120,
+        "city": "city",
+        "category": "category",
+        "price": 10000,
+        "tix available": 1500
+    },
+    {
+        "name": "Event 2",
+        "venue": "venue 2",
+        "description": "description for event 2",
+        "date": "sometime",
+        "duration": 120,
+        "city": "city",
+        "category": "category",
+        "price": 10000,
+        "tix available": 1500
+    },
+    {
+        "name": "Event 3",
+        "venue": "venue 3",
+        "description": "description for event 3",
+        "date": "sometime",
+        "duration": 120,
+        "city": "city",
+        "category": "category",
+        "price": 10000,
+        "tix available": 1500
+    }
+]
+    

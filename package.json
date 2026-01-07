@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest run",
+    "testing": "vitest",
     "dev": "nodemon --exec tsx src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js"
@@ -14,9 +15,13 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@types/supertest": "6.0.3",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
-    "pg-promise": "^12.3.0"
+    "pg-promise": "^12.3.0",
+    "supertest": "7.1.4",
+    "vitest": "4.0.16",
+    "zod": "^4.2.1"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
