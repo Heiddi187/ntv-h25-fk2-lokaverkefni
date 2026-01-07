@@ -1,5 +1,7 @@
 import express from 'express';
 import { errorHandler } from './middleware/errorHandler';
+import eventRoutes from './routes/eventRoutes';
+
 
 
 export const createApp = () => {
@@ -7,7 +9,8 @@ export const createApp = () => {
     app.use(express.json());
 
     //... slóðir inn í routes
-    // app.use /api/slóð
+    //app.use ('/api/events', eventRoutes)
+    app.use('/api/events', eventRoutes);
 
     app.use(errorHandler)
 
