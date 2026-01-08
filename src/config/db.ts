@@ -1,7 +1,9 @@
 import dotenv from 'dotenv';
 import pgPromise from 'pg-promise';
 
-dotenv.config({ path: '.env' });
+dotenv.config({ 
+    path: process.env.NODE_ENV === 'test' ? '.env.test' : '.env'
+});
 
 const pgp = pgPromise({});
 
@@ -13,11 +15,13 @@ const db = process.env.DATABASE_URL ? pgp(process.env.DATABASE_URL) : pgp({
     password: process.env.PGPASSWORD
 });
 
+/*
 db.connect().then((object) => {
     console.log('Connected to PostgresSQL database');
     object.done();
 }).catch((error) => {
     console.error('Database connection error: ,', error.message)
 });
+*/
 
 export default db;
