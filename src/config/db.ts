@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import pgPromise from 'pg-promise';
 
-dotenv.config();
+dotenv.config({ path: '.env' });
 
 const pgp = pgPromise({});
 
