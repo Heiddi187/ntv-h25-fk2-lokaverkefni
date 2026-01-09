@@ -15,13 +15,4 @@ const db = process.env.DATABASE_URL ? pgp(process.env.DATABASE_URL) : pgp({
     password: process.env.PGPASSWORD
 });
 
-/*
-db.connect().then((object) => {
-    console.log('Connected to PostgresSQL database');
-    object.done();
-}).catch((error) => {
-    console.error('Database connection error: ,', error.message)
-});
-*/
-
 export default db;
