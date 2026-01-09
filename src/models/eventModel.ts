@@ -14,3 +14,12 @@ export const createEventModel = (data: any) => {
         VALUES ($/title/, $/description/, $/city/, $/category/, $/event_date/, $/event_time/, $/duration/, $/venue_id/, $/price/, $/tix_available/)
         RETURNING *`, data);
 };
+
+// update event
+
+// delete event by id
+
+// delete all events   ???
+
+// events group by - category / dates / city / venue
+// order by - dates / price / tix sold
