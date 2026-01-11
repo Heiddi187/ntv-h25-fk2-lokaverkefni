@@ -1,11 +1,48 @@
+import { v } from 'vitest/dist/chunks/reporters.d.Rsi0PyxX';
 import db from '../config/db';
 
 export const getAllEventsModel = async () => {
-    return await db.any("SELECT * FROM events ORDER BY event_date, event_time");
+    return await db.any(`
+        SELECT 
+            e.id, 
+            e.title, 
+            e.description, 
+            e.event_date, 
+            e.event_time, 
+            e.duration, 
+            e.venue_id, 
+            v.name as venue_name, 
+            e.city, 
+            e.category, 
+            e.price, 
+            e.tix_available 
+        FROM events e 
+        LEFT JOIN venues v 
+            ON v.id = e.venue_id 
+        ORDER BY e.id`);
 };
 
 export const getEventByIdModel = async (id: number) => {
-    return await db.oneOrNone("SELECT * FROM events WHERE id=$1", [id]);
+    return await db.oneOrNone(`
+        SELECT 
+            e.id, 
+            e.title, 
+            e.description, 
+            e.event_date, 
+            e.event_time, 
+            e.duration, 
+            e.venue_id, 
+            v.name as venue_name, 
+            e.city, 
+            e.category, 
+            e.price, 
+            e.tix_available 
+        FROM events e
+        LEFT JOIN venues v 
+        ON v.id = e.venue_id 
+        WHERE e.id=$1
+        ORDER BY e.id
+        `, [id]);
 };
 
 export const createEventModel = async (data: any) => {
@@ -15,7 +52,6 @@ export const createEventModel = async (data: any) => {
         RETURNING *`, data);
 };
 
-// update event
 export const updateEventModel = async (id: number, data: any) => {
     const fields: string[] = [];
     const values: any[] = [];
@@ -81,9 +117,11 @@ export const updateEventModel = async (id: number, data: any) => {
         UPDATE events SET ${fields.join(', ')} WHERE id = $${parameterIndex} RETURNING *`, values)
 }
 
-// delete event by id
 
-// delete all events   ???
 
 // events group by - category / dates / city / venue
 // order by - dates / price / tix sold
+
+// delete event by id  ???
+
+// delete all events   ???

@@ -10,8 +10,8 @@ export const createEventSchema = z.object({
     duration: z.number().min(10),
     venue_id: z.number().int(),
     price: z.number().int().min(0),
-    tix_available: z.number().int().min(0)
-})
+    tix_available: z.number().int().min(1).max(5500) // finna út hvernig þú getur ekki sett meira en venue.capacity ?
+});
 
 export const IdParamSchema = z.object({
     id: z.coerce.number().int().positive()
