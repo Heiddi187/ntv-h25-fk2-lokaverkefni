@@ -10,6 +10,28 @@ beforeAll(async () => {
     await resetTestDb();
 });
 
+describe('Route validation', () => {
+    it('GET /api/events exists', async () => {
+        const res = await request(app).get('/api/events');
+        expect(res.status).toBe(200); 
+    });
+
+    it('GET invalid route returns 404', async () => {
+        const res = await request(app).get('/api/event');
+        expect(res.status).toBe(404); 
+    });
+
+    it('POST /api/events exists', async () => {
+        const res = await request(app).get('/api/events').send({});
+        expect(res.status).toBe(200); 
+    });
+
+    it('POST invalid route returns 404', async () => {
+        const res = await request(app).get('/api/eventzz').send({});
+        expect(res.status).toBe(404); 
+    });
+})
+
 describe('GET /api/events', () => {
 
     it('should return a 200 status', async () => {
@@ -116,6 +138,28 @@ describe('POST /api/events', () => {
 
     })
 });
+
+describe('GET /api/events/:id', () => {
+    it('should return a event by id', async () => {
+        const res = await request(app).get('/api/events/5');
+        expect(res.status).toBe(200);
+        expect(res.body.id).toBe(5);
+    });
+
+    it('should return 404 for missing id', async () => {
+        const res = await request(app).get('/api/events/5000');
+        expect(res.status).toBe(404);
+    });
+
+    it('should return 400 for bad id', async () => {
+        const res = await request(app).get('/api/events/abc');
+        expect(res.status).toBe(400);
+    });
+});
+
+    // it.todo('', async () => {
+
+    // });
 
 // til að fá tóman lista - put/patch deleteAllEvents /// finna út seinna
 //   it('returns empty list when no events exist', async () => {

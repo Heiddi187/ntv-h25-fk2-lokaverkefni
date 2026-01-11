@@ -12,3 +12,7 @@ export const createEventSchema = z.object({
     price: z.number().int().min(0),
     tix_available: z.number().int().min(0)
 })
+
+export const IdParamSchema = z.object({
+    id: z.coerce.number().int().positive()
+});
