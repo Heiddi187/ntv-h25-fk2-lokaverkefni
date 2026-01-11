@@ -16,3 +16,16 @@ export const createEventSchema = z.object({
 export const IdParamSchema = z.object({
     id: z.coerce.number().int().positive()
 });
+
+export const updateEventSchema = z.object({
+    title: z.string().min(3).optional(),
+    description: z.string().optional(),
+    city: z.string().min(2).optional(),
+    category: z.string().min(2).optional(),
+    event_time: z.string().optional(),
+    event_date: z.string().optional(),
+    duration: z.number().min(10).optional(),
+    venue_id: z.number().int().optional(),
+    price: z.number().int().min(0).optional(),
+    tix_available: z.number().int().min(0).optional()
+}).strict();

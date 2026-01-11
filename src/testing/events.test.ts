@@ -157,6 +157,52 @@ describe('GET /api/events/:id', () => {
     });
 });
 
+describe('PATCH /api/events/:id', () => {
+    
+
+    it('should update a single field', async () => {
+        const res = await request(app).patch('/api/events/20').send({ price: 500 });
+        expect(res.body.price).toBe(500);
+    })
+
+    it('should return 200 on successful change', async () => {
+        const res = await request(app).patch('/api/events/20').send({ price: 500 });
+        expect(res.status).toBe(200);
+    })
+
+    it('should update a multiple fields', async () => {
+        const res = await request(app).patch('/api/events/20').send({ price: 500, category: "cat changed" });
+        expect(res.body.price).toBe(500);
+        expect(res.body.category).toBe("cat changed")
+    })
+
+    it('should call changed event from database with updated field', async () => {
+        const res = await request(app).patch('/api/events/20').send({ category: "cat changed" });
+        const updatedEvent = await db.one('SELECT category FROM events WHERE id=20');
+        expect(updatedEvent.category).toBe("cat changed");
+    })
+
+    it('should reject invalid data type', async () => {
+        const res = await request(app).patch('/api/events/20').send({ price: "500" });
+        expect(res.status).toBe(400);
+    })
+
+    it('should reject if field does not exist', async () => {
+        const res = await request(app).patch('/api/events/20').send({ cost: 500 });
+        expect(res.status).toBe(400);
+    })
+
+    it('should return 404 status if event does not exist', async () => {
+        const res = await request(app).patch('/api/events/20000').send({ price: 500 });
+        expect(res.status).toBe(404);
+    })
+
+    it('should reject invalid id type', async () => {
+        const res = await request(app).patch('/api/events/abc').send({ price: 500 });
+        expect(res.status).toBe(400);
+    })
+})
+
     // it.todo('', async () => {
 
     // });

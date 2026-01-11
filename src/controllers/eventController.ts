@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { getAllEventsModel, createEventModel, getEventByIdModel } from '../models/eventModel';
-import { createEventSchema, IdParamSchema } from "../schemas/event.schema";
+import { getAllEventsModel, createEventModel, getEventByIdModel, updateEventModel } from '../models/eventModel';
+import { createEventSchema, IdParamSchema, updateEventSchema } from "../schemas/event.schema";
 
 export const getAllEventsController = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -34,6 +34,23 @@ export const getEventByIdController = async (req: Request, res: Response, next: 
         }
 
         return res.status(200).json(event);
+    } catch (err) {
+        next(err);
+    }
+};
+
+export const updateEventController = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id } = IdParamSchema.parse(req.params);
+        const data = updateEventSchema.parse(req.body);
+        
+        const updatedEvent = await updateEventModel(id, data);
+
+        if(!updatedEvent) {
+            return res.status(404).json({ error: 'Event id not found'});
+        }
+        
+        return res.status(200).json(updatedEvent);
     } catch (err) {
         next(err);
     }
