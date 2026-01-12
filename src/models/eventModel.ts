@@ -45,6 +45,98 @@ export const getEventByIdModel = async (id: number) => {
         `, [id]);
 };
 
+export const getEventsByCategoryModel = async () => {
+    return await db.any(`
+        SELECT 
+            e.category, 
+            e.id, 
+            e.title, 
+            e.description, 
+            e.event_date, 
+            e.event_time, 
+            e.duration, 
+            e.venue_id, 
+            v.name as venue_name, 
+            e.city, 
+            e.price, 
+            e.tix_available 
+        FROM events e
+        LEFT JOIN venues v 
+        ON v.id = e.venue_id 
+        GROUP BY e.id, v.name
+        ORDER BY e.category, e.event_date`)
+}
+
+export const getEventsByDateModel = async () => {
+    return await db.any(`
+        SELECT 
+            e.event_date, 
+            e.id, 
+            e.title, 
+            e.description, 
+            e.event_time, 
+            e.duration, 
+            e.venue_id, 
+            v.name as venue_name, 
+            e.city, 
+            e.category, 
+            e.price, 
+            e.tix_available 
+        FROM events e
+        LEFT JOIN venues v 
+        ON v.id = e.venue_id 
+        GROUP BY e.id, v.name
+        ORDER BY e.event_date`)
+}
+
+export const getEventsByCityModel = async () => {
+    return await db.any(`
+        SELECT 
+            e.city, 
+            e.id, 
+            e.title, 
+            e.description, 
+            e.event_date, 
+            e.event_time, 
+            e.duration, 
+            e.venue_id, 
+            v.name as venue_name, 
+            e.category, 
+            e.price, 
+            e.tix_available 
+        FROM events e
+        LEFT JOIN venues v 
+        ON v.id = e.venue_id 
+        GROUP BY e.id, v.name
+        ORDER BY e.city, e.event_date`)
+}
+
+export const getEventsByVenueModel = async () => {
+    return await db.any(`
+        SELECT 
+            v.name as venue_name, 
+            e.id, 
+            e.title, 
+            e.description, 
+            e.event_date, 
+            e.event_time, 
+            e.duration, 
+            e.venue_id, 
+            e.category, 
+            e.city, 
+            e.price, 
+            e.tix_available 
+        FROM events e
+        LEFT JOIN venues v 
+        ON v.id = e.venue_id 
+        GROUP BY e.id, v.name
+        ORDER BY v.name, e.event_date`)
+}
+// group by -  /  / city / venue
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 export const createEventModel = async (data: any) => {
     return await db.one(`INSERT INTO events
         (title, description, city, category, event_date, event_time, duration, venue_id, price, tix_available)

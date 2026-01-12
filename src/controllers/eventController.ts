@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { getAllEventsModel, createEventModel, getEventByIdModel, updateEventModel } from '../models/eventModel';
+import { getAllEventsModel, createEventModel, getEventByIdModel, updateEventModel, getEventsByCategoryModel, getEventsByDateModel, getEventsByCityModel, getEventsByVenueModel } from '../models/eventModel';
 import { createEventSchema, IdParamSchema, updateEventSchema } from "../schemas/event.schema";
 
 export const getAllEventsController = async (req: Request, res: Response, next: NextFunction) => {
@@ -14,26 +14,64 @@ export const getAllEventsController = async (req: Request, res: Response, next: 
     }
 };
 
-export const createEventController = async (req: Request, res: Response, next: NextFunction) => {
+export const getEventByIdController = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const data = createEventSchema.parse(req.body);
-        const event = await createEventModel(data);
-        return res.status(201).json(event);
+        const { id } = IdParamSchema.parse(req.params);
+        
+        const event = await getEventByIdModel(id);
+        if(!event) {
+            return res.status(404).json({ error: 'Event Id not found'})
+        }
+        
+        return res.status(200).json(event);
     } catch (err) {
         next(err);
     }
 };
 
-export const getEventByIdController = async (req: Request, res: Response, next: NextFunction) => {
+export const getEventsByCategoryController = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { id } = IdParamSchema.parse(req.params);
+        const events = await getEventsByCategoryModel();
+        return res.status(200).json(events)
+    } catch (err) {
+        next(err)
+    }
+}
 
-        const event = await getEventByIdModel(id);
-        if(!event) {
-            return res.status(404).json({ error: 'Event Id not found'})
-        }
+export const getEventsByDateController = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const events = await getEventsByDateModel();
+        return res.status(200).json(events)
+    } catch (err) {
+        next(err)
+    }
+}
 
-        return res.status(200).json(event);
+export const getEventsByCityController = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const events = await getEventsByCityModel();
+        return res.status(200).json(events)
+    } catch (err) {
+        next(err)
+    }
+}
+
+export const getEventsByVenueController = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const events = await getEventsByVenueModel();
+        return res.status(200).json(events)
+    } catch (err) {
+        next(err)
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const createEventController = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const data = createEventSchema.parse(req.body);
+        const event = await createEventModel(data);
+        return res.status(201).json(event);
     } catch (err) {
         next(err);
     }
