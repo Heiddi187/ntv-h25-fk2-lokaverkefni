@@ -29,7 +29,10 @@ CREATE TABLE users (
 	name VARCHAR(100) NOT NULL,
 	email VARCHAR(255) UNIQUE NOT NULL,
 	password_hash TEXT NOT NULL,
-	money_spent INTEGER DEFAULT 0
+	money_spent INTEGER DEFAULT 0,
+	role VARCHAR(5) DEFAULT 'user',
+	created_at TIMESTAMP DEFAULT NOW(),
+	updated_at TIMESTAMP DEFAULT NOW()
 );
 
 CREATE TABLE tickets (
