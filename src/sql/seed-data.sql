@@ -1,7 +1,7 @@
-TRUNCATE TABLE venues RESTART IDENTITY CASCADE;
+TRUNCATE TABLE tickets RESTART IDENTITY CASCADE;
 TRUNCATE TABLE events RESTART IDENTITY CASCADE;
 TRUNCATE TABLE users RESTART IDENTITY CASCADE;
-TRUNCATE TABLE tickets RESTART IDENTITY CASCADE;
+TRUNCATE TABLE venues RESTART IDENTITY CASCADE;
 
 INSERT INTO venues (name, address, capacity) VALUES
 ('Harpa Concert Hall', 'Austurbakki 2, Reykjavík', 1800),
@@ -42,7 +42,7 @@ INSERT INTO events
 ('Poetry Slam', 'Live poetry performances', 'Reykjavík', 'Culture', '2026-07-01', '19:00', 120, 3, 1500, 800),
 ('Open Air Cinema', 'Outdoor movie night', 'Reykjavík', 'Culture', '2026-07-05', '22:00', 120, 5, 1800, 2500);
 
-INSERT INTO users (name, email, password_hash, money_spent) VALUES
-('Anna Jónsdóttir', 'anna@test.is', 'hash1', 0),
-('Björn Karlsson', 'bjorn@test.is', 'hash2', 0),
-('Katrín Sigurðardóttir', 'katrin@test.is', 'hash3', 0);
+INSERT INTO users (name, email, password_hash, role) VALUES
+('Anna Jónsdóttir', 'anna@test.is', '$2b$12$Yr3rfyR1xP/EM/.//TPrheOQWZEwl6Uj/pIoHTeS8fNw9WhbNPM9e', 'user'),
+('Björn Karlsson', 'bjorn@test.is', '$2b$12$rxRsprN2tkr2j8wIKCX5AOCaelos9IrrDspVBxUxHd5niU2s.4kz2', 'user'),
+('Katrín Sigurðardóttir', 'katrin@test.is', '$2b$12$EYqjitFg5czaVYK0FKyJheZfhsAADXLELH7jTasrWKqwwuZjftwEC', 'user');

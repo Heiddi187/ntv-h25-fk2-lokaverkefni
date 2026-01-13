@@ -10,10 +10,10 @@ const PORT = process.env.PORT || 3001;
 (async () => {
     try {
         await db.one('SELECT 1');
-        console.log('Connected to PostgresSQL database')
+        console.log('✅ Connected to PostgresSQL database')
 
         app.listen(PORT, () => {
-            console.log(`Server is running on: ${PORT}`);
+            console.log(`🚀 Server is running on: ${PORT}`);
         });
     } catch (err) {
         console.error('Database connection error: ,', err)
