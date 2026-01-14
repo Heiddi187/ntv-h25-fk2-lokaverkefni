@@ -39,6 +39,9 @@ CREATE TABLE tickets (
 	id SERIAL PRIMARY KEY,
 	user_id INTEGER REFERENCES users(id),
 	event_id INTEGER REFERENCES events(id),
+	quantity INTEGER NOT NULL CHECK (quantity > 0),
 	purchased_at TIMESTAMP DEFAULT NOW(),
-	returned BOOLEAN DEFAULT FALSE
+	total_price INTEGER NOT NULL CHECK (total_price >= 0),
+	ticket_status VARCHAR(12) DEFAULT 'bought'
+		CHECK (ticket_status IN ('bought', 'refunded', 'used', 'expired'))
 );
