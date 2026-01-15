@@ -44,13 +44,18 @@ describe('GET /api/tickets/user', async () => {
         expect(res.body.data.total_spent).toBe(0);
     });
 
-    it('should ereject if token is missing or wrong', async () => {
+    it('should send 403 status and reject if token is wrong', async () => {
         await request(app).post('/api/users/signup').send(signupUser);
         const login = await request(app).post('/api/users/login').send(loginUser);
         const token = login.body.token;
         const fakeToken = 'æhnagbgkjbkabgkbgajk'
         const res = await request(app).get('/api/tickets/user').set('Authorization', `Bearer ${fakeToken}`);
         expect(res.status).toBe(403)
+    });
+
+    it('should send 401 status if token is missing', async () => {
+        const res = await request(app).get('/api/tickets/user');
+        expect(res.status).toBe(401);
     });
 
 });
@@ -70,6 +75,29 @@ describe('POST /api/tickets/buy', async () => {
         expect(res.status).toBe(201)
         expect(res.body).toBeDefined();
     });
+
+    it('should send 403 status and reject if token is wrong', async () => {
+        const res = await request(app)
+            .post('/api/tickets/buy')
+            .set('Authorization', 'Bearer Invalid token')
+            .send({
+                event_id: 1,
+                quantity: 4 
+            }
+        );
+        expect(res.status).toBe(403);
+    })
+
+    it('should send 401 status if there is no token', async () => {
+        const res = await request(app)
+            .post('/api/tickets/buy')
+            .send({
+                event_id: 1,
+                quantity: 4 
+            }
+        );
+        expect(res.status).toBe(401);
+    })
 
     it('should buy correct amount of tickets to the right event', async () => {
         await request(app).post('/api/users/signup').send(signupUser);
@@ -134,6 +162,16 @@ describe('PATCH /api/tickets/:id/return', async () => {
         expect(res.status).toBe(200);
         expect(res.body.ticket_status).toBe('refunded')
     });
+
+    it('should send 401 status if there is no token', async () => {
+        const res = await request(app).patch(`/api/tickets/1/return`);
+        expect(res.status).toBe(401);
+    })
+
+    it('should send 403 status and reject if token is wrong', async () => {
+        const res = await request(app).patch(`/api/tickets/1/return`).set('Authorization', 'Bearer Invalid token');
+        expect(res.status).toBe(403);
+    })
 
     it('should return tickets to event after refund', async () => {
         await request(app).post('/api/users/signup').send(signupUser);
