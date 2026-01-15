@@ -71,15 +71,36 @@ export const getUsersTicketsModel = async (userId: number) => {
 };
 
 export const returnTicketModel = async (ticketId: number, userId: number) => {
-    return db.oneOrNone(`
-        UPDATE tickets
-        SET ticket_status = 'refunded'
-        WHERE id = $1 
-            AND user_id = $2 
-            AND ticket_status = 'bought'
-        RETURNING *
-        `, [ticketId, userId]
-    );
+    return db.tx(async (t) => {
+        const ticket = await t.oneOrNone(`
+            SELECT *
+            FROM tickets
+            WHERE id = $1 
+                AND user_id = $2 
+                AND ticket_status = 'bought'
+            FOR UPDATE
+            `, [ticketId, userId]
+        );
+
+        if (!ticket) return null;
+
+        await t.none(`
+            UPDATE events
+            SET tix_available = tix_available + $1
+            WHERE id = $2
+            `, [ticket.quantity, ticket.event_id]
+        );
+
+        const refunded = await t.one(`
+            UPDATE tickets
+            SET ticket_status = 'refunded'
+            WHERE id = $1
+            RETURNING *
+            `, [ticketId]
+        );
+
+        return refunded;
+    });
 };
 
 export const ticketToReturnModel = async (ticketId: number, userId: number) => {

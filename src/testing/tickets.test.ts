@@ -133,6 +133,42 @@ describe('PATCH /api/tickets/:id/return', async () => {
         expect(res.body.ticket_status).toBe('refunded')
     });
 
+    it('should return tickets to event after refund', async () => {
+        await request(app).post('/api/users/signup').send(signupUser);
+        const login = await request(app).post('/api/users/login').send(loginUser);
+        const token = login.body.token;
+
+        const before = await db.one(
+            `SELECT tix_available FROM events WHERE id = 1`
+        );
+        //console.log('before: ', before) // 1792
+        const buy = await request(app)
+            .post('/api/tickets/buy')
+            .set('Authorization', `Bearer ${token}`)
+            .send({ event_id: 1, quantity: 3 });
+
+        const ticketId = buy.body.id;
+
+        // const during = await db.one(
+        //     `SELECT tix_available FROM events WHERE id = 1`
+        // );
+        // console.log('during: ', during) // 1789
+
+        const res = await request(app)
+            .patch(`/api/tickets/${ticketId}/return`)
+            .set('Authorization', `Bearer ${token}`);
+
+        expect(res.status).toBe(200);
+        expect(res.body.ticket_status).toBe('refunded');
+
+        const after = await db.one(
+            `SELECT tix_available FROM events WHERE id = 1`
+        );
+        //console.log('after: ', after) // 1792
+
+        expect(after.tix_available).toBe(before.tix_available);
+    })
+
     it('should throw 400 if you try to return ticket again', async () => {
         await request(app).post('/api/users/signup').send(signupUser);
         const login = await request(app).post('/api/users/login').send(loginUser);
