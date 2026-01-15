@@ -38,8 +38,10 @@ describe('GET /api/tickets/user', async () => {
         const login = await request(app).post('/api/users/login').send(loginUser);
         const token = login.body.token;
         const res = await request(app).get('/api/tickets/user').set('Authorization', `Bearer ${token}`);
-        expect(Array.isArray(res.body)).toBe(true);
-        expect(res.body.length).toBe(0);
+        expect(Array.isArray(res.body.tickets)).toBe(true);
+        expect(res.body.tickets.length).toBe(0);
+        expect(res.body.data.event_count).toBe(0);
+        expect(res.body.data.total_spent).toBe(0);
     });
 
     it('should ereject if token is missing or wrong', async () => {

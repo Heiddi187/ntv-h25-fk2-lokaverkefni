@@ -51,14 +51,14 @@ export const buyTicketModel = async (
 export const getUsersTicketsModel = async (userId: number) => {
     return db.manyOrNone(`
         SELECT
+            e.title,
             t.id AS ticket_id,
             t.quantity,
             t.total_price,
             t.ticket_status,
-            t.purchased_at,
-            e.title,
             e.event_date,
             e.event_time,
+            t.purchased_at,
             v.id AS venue_id,
             v.name AS venue
         FROM tickets t
@@ -124,6 +124,18 @@ export const oldTicketsExpireModel = async () => {
             AND ((e.event_date + e.event_time) AT TIME ZONE 'UTC')::timestamptz < NOW()
             AND t.ticket_status = 'bought'
         `
+    );
+};
+
+export const getUserDataModel = async (userId: number) => {
+    return db.oneOrNone(`
+        SELECT
+            COUNT(DISTINCT event_id) AS event_count,
+            COALESCE(SUM(total_price), 0) AS total_spent
+        FROM tickets
+        WHERE user_id = $1
+            AND ticket_status IN ('bought', 'used', 'expired')
+        `, [userId]
     );
 };
 

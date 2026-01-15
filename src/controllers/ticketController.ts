@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { buyTicketModel, getUsersTicketsModel, oldTicketsExpireModel, returnTicketModel, ticketToReturnModel } from "../models/ticketModel";
+import { buyTicketModel, getUserDataModel, getUsersTicketsModel, oldTicketsExpireModel, returnTicketModel, ticketToReturnModel } from "../models/ticketModel";
 
 export const buyTicketsController = async (req: Request, res: Response, next: NextFunction) => {
     await oldTicketsExpireModel();
@@ -23,8 +23,17 @@ export const getUsersTicketsController = async (req: Request, res: Response, nex
     await oldTicketsExpireModel();
     try {
         const tickets = await getUsersTicketsModel(req.user!.id);
+        const rawData = await getUserDataModel(req.user!.id);
+
+        const data = {
+            event_count: Number(rawData.event_count),
+            total_spent: Number(rawData.total_spent)
+        };
         
-        return res.status(200).json(tickets);
+        return res.status(200).json({
+            data, 
+            tickets
+        });
     } catch (err) {
         next(err);
     }
