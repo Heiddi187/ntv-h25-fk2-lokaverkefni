@@ -3,6 +3,8 @@ import request from "supertest";
 import { createApp } from "../app";
 import { resetTestDb } from "./setup";
 import db from '../config/db';
+import jwt from 'jsonwebtoken';
+import { oldTicketsExpireModel } from "../models/ticketModel";
 
 const app = createApp();
 
@@ -181,35 +183,43 @@ describe('PATCH /api/tickets/:id/return', async () => {
     })
 
     it('should reject if event has passed', async () => {
-        await request(app).post('/api/users/signup').send(signupUser);
-        const login = await request(app).post('/api/users/login').send(loginUser);
+        const login = await request(app).post('/api/users/login').send({
+            email: "anna@test.is",
+            password: "secret123"
+        });
+
         const token = login.body.token;
-        const eventPassed = await db.one(`
-            WITH ts AS (
-                SELECT NOW() - INTERVAL '2 hours' AS t
-            )
+
+        const expiredEvent = await db.one(`
             INSERT INTO events (title, event_date, event_time, duration, venue_id, price, tix_available)
-            SELECT
-                'Event already passed',
-                t::date,
-                t::time,
-                60, 2, 123, 10
-            FROM ts
-            RETURNING *
+            VALUES (
+            'Expired Test Event',
+            (NOW() - INTERVAL '2 days')::date,
+            (NOW() - INTERVAL '2 days')::time,
+            60,
+            1,
+            100,
+            10
+            )
+            RETURNING id
         `);
-        const buy = await request(app)
-            .post('/api/tickets/buy')
-            .set('Authorization', `Bearer ${token}`)
-            .send({
-                event_id: eventPassed.id,
-                quantity: 2 
-            }
-        );
-        const ticketId = buy.body.id;
-        const res = await request(app).patch(`/api/tickets/${ticketId}/return`).set('Authorization', `Bearer ${token}`);
+
+        const ticket = await db.one(`
+            INSERT INTO tickets (user_id, event_id, quantity, total_price)
+            VALUES (1, $1, 2, 200)
+            RETURNING id
+        `, [expiredEvent.id]);
+
+        const res = await request(app)
+            .patch(`/api/tickets/${ticket.id}/return`)
+            .set('Authorization', `Bearer ${token}`);
+
         expect(res.status).toBe(400);
-    })
+        expect(res.body.error).toBe('Ticket has expired');
+    }); 
 });
+
+
 
 // INSERT INTO events (title, event_date, event_time, duration, venue_id, price, tix_available)
 //             VALUES ('Event already passed',

@@ -7,7 +7,9 @@ export const buyTicketModel = async (
 ) => {
     return db.tx(async (t) => {
         const event = await t.oneOrNone(`
-            SELECT id, price, tix_available, event_date
+            SELECT id, price, tix_available, 
+                ((event_date + event_time) AT TIME ZONE 'UTC')::timestamptz AS event_ts,
+                ((event_date + event_time) AT TIME ZONE 'UTC')::timestamptz < NOW() AS is_expired
             FROM events
             WHERE id = $1
             FOR UPDATE
@@ -17,9 +19,8 @@ export const buyTicketModel = async (
             if (!event) {
                 throw new Error('EVENT_NOT_FOUND');
             };
-            
-            const eventDateTime = new Date(`${event.event_date.toISOString().slice(0,10)}T${event.event_time}Z`);
-            if (eventDateTime <= new Date()) {
+
+            if (event.is_expired) {
                 throw new Error('EVENT_HAS_PASSED');
             }
             
@@ -73,7 +74,9 @@ export const returnTicketModel = async (ticketId: number, userId: number) => {
     return db.oneOrNone(`
         UPDATE tickets
         SET ticket_status = 'refunded'
-        WHERE id = $1 AND user_id = $2 AND ticket_status = 'bought'
+        WHERE id = $1 
+            AND user_id = $2 
+            AND ticket_status = 'bought'
         RETURNING *
         `, [ticketId, userId]
     );
@@ -83,13 +86,25 @@ export const ticketToReturnModel = async (ticketId: number, userId: number) => {
     return db.oneOrNone(`
         SELECT 
             t.*, 
-            (e.event_date + e.event_time) AT TIME ZONE 'UTC' AS event_ts
+            ((e.event_date + e.event_time) AT TIME ZONE 'UTC')::timestamptz AS event_ts
         FROM tickets t
         JOIN events e ON e.id = t.event_id
         WHERE t.id = $1 AND t.user_id = $2
         `, [ticketId, userId]
     );
-}
+};
+
+export const oldTicketsExpireModel = async () => {
+    await db.none(`
+        UPDATE tickets t
+        SET ticket_status = 'expired'
+        FROM events e
+        WHERE e.id = t.event_id
+            AND ((e.event_date + e.event_time) AT TIME ZONE 'UTC')::timestamptz < NOW()
+            AND t.ticket_status = 'bought'
+        `
+    );
+};
 
 // verður að vera logged in
 // tix available
