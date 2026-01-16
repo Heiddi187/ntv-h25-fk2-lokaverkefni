@@ -99,6 +99,21 @@ describe('POST /api/tickets/buy', async () => {
         expect(res.status).toBe(401);
     })
 
+    it('should reject if trying to buy negative amount of tickets', async () => {
+        await request(app).post('/api/users/signup').send(signupUser);
+        const login = await request(app).post('/api/users/login').send(loginUser);
+        const token = login.body.token;
+        const res = await request(app)
+            .post('/api/tickets/buy')
+            .set('Authorization', `Bearer ${token}`)
+            .send({
+                event_id: 1,
+                quantity: -4 
+            });
+        expect(res.status).toBe(400)
+        expect(res.body.error.message).toBe('Validation failed');
+    });
+
     it('should buy correct amount of tickets to the right event', async () => {
         await request(app).post('/api/users/signup').send(signupUser);
         const login = await request(app).post('/api/users/login').send(loginUser);

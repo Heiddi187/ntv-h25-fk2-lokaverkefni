@@ -66,6 +66,7 @@ export const getEventsByVenueController = async (req: Request, res: Response, ne
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// .... Óþarfi sem má eyða fyrir skil ....
 
 export const createEventController = async (req: Request, res: Response, next: NextFunction) => {
     try {

@@ -43,14 +43,14 @@ export const updateUserModel = async (id: number, data: any) => {
 export const deleteUserModel = (id: number) => {
     return db.tx(async (t) => {
         await returnTicketsIfUserIsDeletedModel(id);
-        //
+        
         await t.none(`
             UPDATE tickets
             SET user_id = NULL
             WHERE user_id = $1 
             `, [id]
         );
-        //
+        
         await t.none('DELETE FROM users WHERE id=$1', [id]);
     });
 };
