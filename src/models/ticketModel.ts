@@ -139,6 +139,38 @@ export const getUserDataModel = async (userId: number) => {
     );
 };
 
+export const returnTicketsIfUserIsDeletedModel = async (userId: number) => {
+    return db.tx(async (t) => {
+        const usersTickets = await t.manyOrNone(`
+            SELECT id, event_id, quantity
+            FROM tickets
+            WHERE user_id = $1
+                AND ticket_status = 'bought'
+            FOR UPDATE
+            `, [userId]
+        );
+
+        for(const ticket of usersTickets) {
+            await t.none(`
+                UPDATE events
+                SET tix_available = tix_available + $1
+                WHERE id = $2
+                `, [ticket.quantity, ticket.event_id]
+            );
+        };
+
+        await t.none(`
+            UPDATE tickets
+            SET ticket_status = 'refunded'
+            WHERE user_id = $1
+                AND ticket_status = 'bought'
+            `, [userId]
+        );
+
+        return usersTickets.length;
+    });
+}
+
 // verður að vera logged in
 // tix available
 // greiðslu uppl?

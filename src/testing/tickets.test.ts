@@ -207,7 +207,40 @@ describe('PATCH /api/tickets/:id/return', async () => {
         //console.log('after: ', after) // 1792
 
         expect(after.tix_available).toBe(before.tix_available);
-    })
+    });
+
+    it('should return tickets to event if user is deleted', async () => {
+        await request(app).post('/api/users/signup').send(signupUser);
+        const login = await request(app).post('/api/users/login').send(loginUser);
+        const token = login.body.token;
+
+        const tixBefore = await db.one(
+            `SELECT tix_available FROM events WHERE id = 2`
+        );
+        await request(app)
+            .post('/api/tickets/buy')
+            .set('Authorization', `Bearer ${token}`)
+            .send({
+                event_id: 2,
+                quantity: 7 
+            }
+        );
+        // const tixDuring = await db.one(
+        //     `SELECT tix_available FROM events WHERE id = 2`
+        // );
+        // console.log('num of tickets during: ', tixDuring) // 1793
+
+        const res = await request(app)
+            .delete('/api/users/user')
+            .set('Authorization', `Bearer ${token}`);
+        expect(res.status).toBe(204);
+        
+        const tixAfter = await db.one(
+            `SELECT tix_available FROM events WHERE id = 2`
+        );
+        
+        expect(tixBefore.tix_available).toBe(tixAfter.tix_available);
+    });
 
     it('should throw 400 if you try to return ticket again', async () => {
         await request(app).post('/api/users/signup').send(signupUser);

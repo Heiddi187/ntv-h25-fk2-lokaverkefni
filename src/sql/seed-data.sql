@@ -36,6 +36,7 @@ INSERT INTO events
 ('Magic Show', 'Family magic show', 'Reykjavík', 'Family', '2026-06-05', '16:00', 90, 3, 4000, 800),
 ('Kids Science Fair', 'Fun experiments for kids', 'Reykjavík', 'Family', '2026-06-10', '14:00', 120, 5, 3000, 2500),
 ('Yoga Festival', 'Outdoor wellness event', 'Reykjavík', 'Wellness', '2026-06-15', '10:00', 240, 5, 3500, 2500),
+('An old event', 'For testing purposes', 'Fantasyland', 'Test', '2025-01-01', '10:00', 10, 1, 123, 10),
 
 ('Startup Pitch Night', 'Entrepreneurship event', 'Reykjavík', 'Business', '2026-06-20', '18:00', 180, 3, 2000, 800),
 ('Food Truck Festival', 'Street food paradise', 'Reykjavík', 'Food', '2026-06-25', '12:00', 300, 5, 2500, 2500),
