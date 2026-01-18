@@ -20,9 +20,9 @@ export const ticketSchema = z.object({
     quantity: z.number(),
     total_price: z.number(),
     ticket_status: z.enum(['bought', 'refunded', 'used', 'expired']),
-    event_date: z.string(),
+    event_date: z.date(),
     event_time: z.string(),
-    purchased_at: z.string(),
+    purchased_at: z.date(),
     venue_id: z.number(),
     venue: z.string(),
 });

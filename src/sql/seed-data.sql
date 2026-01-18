@@ -23,7 +23,7 @@ INSERT INTO events
 ('Iceland vs Norway', 'International football match', 'Reykjavík', 'Sports', '2026-04-01', '18:00', 105, 2, 8900, 5500),
 ('KR vs Valur', 'Premier league derby', 'Reykjavík', 'Sports', '2026-04-05', '19:30', 100, 2, 7500, 5500),
 ('National Handball Finals', 'Championship finals', 'Reykjavík', 'Sports', '2026-04-12', '17:00', 120, 2, 6900, 5500),
-('Basketball Cup Final', 'Icelandic Cup', 'Reykjavík', 'Sports', '2026-04-18', '19:00', 100, 5, 6500, 2500),
+('Basketball Cup Final', 'Icelandic Cup', 'Kópavogur', 'Sports', '2026-04-18', '19:00', 100, 5, 6500, 2500),
 
 -- Theatre
 ('Romeo and Juliet', 'Classic Shakespeare play', 'Reykjavík', 'Theatre', '2026-05-01', '19:00', 140, 4, 8200, 950),
@@ -34,14 +34,14 @@ INSERT INTO events
 -- Other
 ('Reykjavík Comedy Night', 'Stand-up show', 'Reykjavík', 'Comedy', '2026-06-01', '21:00', 120, 3, 4500, 800),
 ('Magic Show', 'Family magic show', 'Reykjavík', 'Family', '2026-06-05', '16:00', 90, 3, 4000, 800),
-('Kids Science Fair', 'Fun experiments for kids', 'Reykjavík', 'Family', '2026-06-10', '14:00', 120, 5, 3000, 2500),
-('Yoga Festival', 'Outdoor wellness event', 'Reykjavík', 'Wellness', '2026-06-15', '10:00', 240, 5, 3500, 2500),
+('Kids Science Fair', 'Fun experiments for kids', 'Kópavogur', 'Family', '2026-06-10', '14:00', 120, 5, 3000, 2500),
+('Yoga Festival', 'Outdoor wellness event', 'Kópavogur', 'Wellness', '2026-06-15', '10:00', 240, 5, 3500, 2500),
 ('An old event', 'For testing purposes', 'Fantasyland', 'Test', '2025-01-01', '10:00', 10, 1, 123, 10),
 
 ('Startup Pitch Night', 'Entrepreneurship event', 'Reykjavík', 'Business', '2026-06-20', '18:00', 180, 3, 2000, 800),
-('Food Truck Festival', 'Street food paradise', 'Reykjavík', 'Food', '2026-06-25', '12:00', 300, 5, 2500, 2500),
+('Food Truck Festival', 'Street food paradise', 'Kópavogur', 'Food', '2026-06-25', '12:00', 300, 5, 2500, 2500),
 ('Poetry Slam', 'Live poetry performances', 'Reykjavík', 'Culture', '2026-07-01', '19:00', 120, 3, 1500, 800),
-('Open Air Cinema', 'Outdoor movie night', 'Reykjavík', 'Culture', '2026-07-05', '22:00', 120, 5, 1800, 2500);
+('Open Air Cinema', 'Outdoor movie night', 'Kópavogur', 'Culture', '2026-07-05', '22:00', 120, 5, 1800, 2500);
 
 INSERT INTO users (name, email, password_hash, role) VALUES
 ('Anna Jónsdóttir', 'anna@test.is', '$2b$12$Yr3rfyR1xP/EM/.//TPrheOQWZEwl6Uj/pIoHTeS8fNw9WhbNPM9e', 'user'),

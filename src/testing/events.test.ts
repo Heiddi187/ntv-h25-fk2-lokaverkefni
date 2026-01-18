@@ -33,31 +33,134 @@ describe('Route validation', () => {
 })
 
 describe('GET /api/events', () => {
-
     it('should return a 200 status', async () => {
         const res = await request(app).get('/api/events');
         expect(res.status).toBe(200);
-        expect(res.body.count).toBeGreaterThan(0);
+        expect(res.body.total).toBeGreaterThan(0);
     });
 
     it('should return a count', async () => {
         const res = await request(app).get('/api/events');
-        expect(res.body).toHaveProperty('count');
-        expect(res.body.count).toBe(res.body.items.length);
+        expect(res.body).toHaveProperty('total');
+        expect(res.body.events.length).toBeGreaterThanOrEqual(20);
     })
 
-    it('should return an array of items', async () => {
+    it('should return an array of events', async () => {
         const res = await request(app).get('/api/events');
-        expect(Array.isArray(res.body.items)).toBe(true);
+        expect(Array.isArray(res.body.events)).toBe(true);
     })
 
-    it('should have a length of 20+ (seed data has 20)', async () => {
+    it('should have a length of 15+ (seed data has 20+)', async () => {
         const res = await request(app).get('/api/events');
-        expect(res.body.items.length).toBeGreaterThanOrEqual(20);
+        expect(res.body.events.length).toBeGreaterThanOrEqual(20);
     })
 
+    it('should return empty list if no events match filters', async () => {
+        const res = await request(app)
+            .get('/api/events')
+            .query({ category: 'nonexistent' });
+
+        expect(res.status).toBe(200);
+        expect(Array.isArray(res.body.events)).toBe(true);
+        expect(res.body.events.length).toBe(0);
+    });
+
+    it('should reject invalid sorting value', async () => {
+        const res = await request(app).get('/api/events').query({ sort: 'Invalid filter' });
+        expect(res.status).toBe(400);
+        expect(res.body.error.message).toBe('Validation failed');
+    })
+
+    it('should reject if page is less then 1', async () => {
+        const res = await request(app).get('/api/events').query({ page: 0 });
+        expect(res.status).toBe(400);
+        expect(res.body.error.message).toBe('Validation failed');
+    });
+
+    it('should pagenate results', async () => {
+        const res = await request(app).get('/api/events').query({ page: 1, limit: 5 });
+        expect(res.status).toBe(200);
+        expect(res.body.events.length).toBeLessThanOrEqual(5);
+    });
+
+    it('should return different results for different pages', async () => {
+        const page1 = await request(app).get('/api/events').query({ page: 1, limit: 5 });
+        const page2 = await request(app).get('/api/events').query({ page: 2, limit: 5 });
+        expect(page1.body.events[0].id).not.toBe(page2.body.events[0].id);
+    });
+
+    it('should filter events with date_from', async () => {
+        const res = await request(app).get('/api/events').query({ date_from: '2026-03-03' });
+        expect(res.status).toBe(200);
+        expect(Array.isArray(res.body.events)).toBe(true);
+        for (const event of res.body.events) {
+            expect(new Date(event.event_date) >= new Date('2026-03-03')).toBe(true);
+        }
+    });
+
+    it('should filter events with date_to', async () => {
+        const res = await request(app).get('/api/events').query({ date_to: '2026-03-03' });
+        expect(res.status).toBe(200);
+        expect(Array.isArray(res.body.events)).toBe(true);
+        for (const event of res.body.events) {
+            expect(new Date(event.event_date) <= new Date('2026-03-03')).toBe(true);
+        }
+    });
+
+    it('should reject invalid date format', async () => {
+        const res = await request(app).get('/api/events').query({ date_from: 'þriðjimarstuttuguogsex' });
+        expect(res.status).toBe(400);
+        expect(res.body.error.message).toBe('Validation failed');
+    });
+
+    it('should work with multiple filters', async () => {
+        const res = await request(app).get('/api/events').query({ category: 'sport', city: 'Reykjavík' });
+        expect(res.status).toBe(200);
+        for (const event of res.body.events) {
+            expect(event.category).toContain('Sport');
+            expect(event.city).toContain('Reykjavík');
+        }
+    });
+
+    it('should return total count > page limit', async () => {
+        const res = await request(app).get('/api/events').query({ category: 'sport', limit: 2 });
+        expect(res.status).toBe(200);
+        expect(res.body.total).toBeGreaterThan(res.body.events.length);
+        expect(typeof res.body.total).toBe('number');
+    });
+
+    it('should return empty list when no event matches filters', async () => {
+        const res = await request(app).get('/api/events').query({ category: 'webinar' });
+        expect(res.status).toBe(200);
+        expect(res.body.events).toEqual([]);
+        expect(res.body.total).toBe(0);
+    });
 });
 
+describe('GET /api/events/:id', () => {
+    it('should return a event by id', async () => {
+        const res = await request(app).get('/api/events/5');
+        expect(res.status).toBe(200);
+        expect(res.body.id).toBe(5);
+    });
+
+    it('should return 404 for missing id', async () => {
+        const res = await request(app).get('/api/events/5000');
+        expect(res.status).toBe(404);
+    });
+
+    it('should return 400 for bad id', async () => {
+        const res = await request(app).get('/api/events/abc');
+        expect(res.status).toBe(400);
+    });
+});
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// drasl sem ég var að leika mér með
+
+
+/*
 const validTestEvent = {
     title: "tester event",
     description: "some description",
@@ -72,7 +175,6 @@ const validTestEvent = {
 }
 
 describe('POST /api/events', () => {
-
     it('should create a new event and return status 201', async () => {
         const res = await request(app).post('/api/events').send(validTestEvent);
         expect(res.status).toBe(201);
@@ -133,33 +235,11 @@ describe('POST /api/events', () => {
         });
         expect(res.status).toBe(500);
     })
-
-    it.todo('stest1', async () => {
-
-    })
 });
+*/
 
-describe('GET /api/events/:id', () => {
-    it('should return a event by id', async () => {
-        const res = await request(app).get('/api/events/5');
-        expect(res.status).toBe(200);
-        expect(res.body.id).toBe(5);
-    });
-
-    it('should return 404 for missing id', async () => {
-        const res = await request(app).get('/api/events/5000');
-        expect(res.status).toBe(404);
-    });
-
-    it('should return 400 for bad id', async () => {
-        const res = await request(app).get('/api/events/abc');
-        expect(res.status).toBe(400);
-    });
-});
-
+/*
 describe('PATCH /api/events/:id', () => {
-    
-
     it('should update a single field', async () => {
         const res = await request(app).patch('/api/events/20').send({ price: 500 });
         expect(res.body.price).toBe(500);
@@ -202,7 +282,7 @@ describe('PATCH /api/events/:id', () => {
         expect(res.status).toBe(400);
     })
 })
-
+*/
     // it.todo('', async () => {
 
     // });

@@ -23,13 +23,15 @@ export const signupUserModel = async ({ name, email, password}: SignupInput) => 
         INSERT INTO users (name, email, password_hash)
         VALUES ($1, $2, $3)
         RETURNING id, name, email, created_at, role`, 
-        [name, email, hash]);
+        [name, email, hash]
+    );
 };
 
 export const updateUserModel = async (id: number, data: any) => {
     if (data.password) {
         data.password_hash = await bcrypt.hash(data.password, 12);
     };
+
     return db.oneOrNone(`
         UPDATE users SET
             name = COALESCE($2, name),
@@ -37,7 +39,9 @@ export const updateUserModel = async (id: number, data: any) => {
             password_hash = COALESCE($4, password_hash),
             updated_at = NOW()
         WHERE id=$1
-        RETURNING id, name, email, updated_at, role`, [id, data.name, data.email, data.password_hash]);
+        RETURNING id, name, email, updated_at, role
+        `, [id, data.name, data.email, data.password_hash]
+    );
 };
 
 export const deleteUserModel = (id: number) => {
@@ -56,7 +60,7 @@ export const deleteUserModel = (id: number) => {
 };
 
 
-
+/////////////////////////////// Annað drasl
 // export type LoginInput = {
 //     email: string;
 //     password: string;

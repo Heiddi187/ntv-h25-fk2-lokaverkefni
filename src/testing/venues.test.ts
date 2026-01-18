@@ -10,7 +10,6 @@ beforeAll(async () => {
     await resetTestDb();
 });
 
-
 describe('GET /api/venues', async () => {
     it('should exist and return 200 status', async () => {
         const res = await request(app).get('/api/venues');
@@ -25,32 +24,30 @@ describe('GET /api/venues', async () => {
     it('should return an array of venues', async () => {
         const res = await request(app).get('/api/venues');
         expect(Array.isArray(res.body)).toBe(true);
-    })
+    });
 
     it('should return 5 venues', async () => {
         const res = await request(app).get('/api/venues');
         expect(res.body.length).toBe(5);
-    })
-
+    });
 });
 
 describe('GET /api/venues/:id', () => {
     it('should return a single venue', async () => {
         const res = await request(app).get('/api/venues/1');
         expect(res.body.id).toBe(1);
-        expect(res.body.id).not.toBe(2)
-    })
+        expect(res.body.id).not.toBe(2);
+    });
 
     it('should return 404 for missing id', async () => {
         const res = await request(app).get('/api/venues/66');
         expect(res.status).toBe(404);
-    })
+    });
 
     it('should return 400 for bad id', async () => {
         const res = await request(app).get('/api/venues/abc');
         expect(res.status).toBe(400);
-    })
- 
+    });
 });
 
 describe('GET /api/venues/:id/events', () => {
@@ -79,5 +76,4 @@ describe('GET /api/venues/:id/events', () => {
         const res = await request(app).get('/api/venues/3/events');
         expect(Array.isArray(res.body.events)).toBe(true);
     });
-
-})
+});

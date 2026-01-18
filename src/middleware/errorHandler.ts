@@ -9,21 +9,15 @@ export class AppError extends Error {
     this.status = status;
 
     Object.setPrototypeOf(this, new.target.prototype);
-  }
-}
+  };
+};
 
 export class NotFoundError extends AppError {
   constructor(message = 'Not Found') {
     super(message, 404);
-  }
-}
-/**
- * Handle errors
- * @param error - The error to handle
- * @param request - The request object
- * @param response - The response object
- * @param next - The next function
- */
+  };
+};
+
 export const errorHandler = (
   error: AppError,
   request: Request,
@@ -43,7 +37,7 @@ export const errorHandler = (
         details,
       },
     });
-  }
+  };
 
   const status = error.status || 500;
   const message = error.message || 'Internal Server Error';
@@ -56,6 +50,8 @@ export const errorHandler = (
   });
 };
 
+
+////////// Annað sem var reynt
 /*
 interface AppError extends Error {
     statusCode?: number

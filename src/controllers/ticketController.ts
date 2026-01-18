@@ -17,7 +17,7 @@ export const buyTicketsController = async (req: Request, res: Response, next: Ne
         if (err.message === 'EVENT_HAS_PASSED') return res.status(400).json({ error: 'Event has passed' });
         if (err.message === 'NOT_ENOUGH_TICKETS') return res.status(400).json({ error: 'Not enough tickets available' })
         next(err)
-    }
+    };
 };
 
 export const getUsersTicketsController = async (req: Request, res: Response, next: NextFunction) => {
@@ -39,7 +39,7 @@ export const getUsersTicketsController = async (req: Request, res: Response, nex
         return res.status(200).json(validateResponse);
     } catch (err) {
         next(err);
-    }
+    };
 };
 
 export const returnTicketController = async (req: Request, res: Response, next: NextFunction) => {
@@ -72,6 +72,5 @@ export const returnTicketController = async (req: Request, res: Response, next: 
 
     } catch (err) {
         next(err)
-    }
-}
-//           
+    };
+};    

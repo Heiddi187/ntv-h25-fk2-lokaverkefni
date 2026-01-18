@@ -13,38 +13,38 @@ export const buyTicketModel = async (
             FROM events
             WHERE id = $1
             FOR UPDATE
-            `, [eventId]);
+            `, [eventId]
+        );
 
-            // possible errors
-            if (!event) {
-                throw new Error('EVENT_NOT_FOUND');
-            };
+        if (!event) {
+            throw new Error('EVENT_NOT_FOUND');
+        };
 
-            if (event.is_expired) {
-                throw new Error('EVENT_HAS_PASSED');
-            }
-            
-            if (event.tix_available < quantity) {
-                throw new Error('NOT_ENOUGH_TICKETS');
-            };
+        if (event.is_expired) {
+            throw new Error('EVENT_HAS_PASSED');
+        }
+        
+        if (event.tix_available < quantity) {
+            throw new Error('NOT_ENOUGH_TICKETS');
+        };
 
-            const totalPrice = quantity * event.price;
+        const totalPrice = quantity * event.price;
 
-            await t.none(`
-                UPDATE events
-                SET tix_available = tix_available - $1
-                WHERE id = $2
-                `, [quantity, eventId]
-            );
+        await t.none(`
+            UPDATE events
+            SET tix_available = tix_available - $1
+            WHERE id = $2
+            `, [quantity, eventId]
+        );
 
-            const ticket = await t.one(`
-                INSERT INTO tickets (user_id, event_id, quantity, total_price)
-                VALUES ($1, $2, $3, $4)
-                RETURNING *
-                `, [userId, eventId, quantity, totalPrice]
-            );
+        const ticket = await t.one(`
+            INSERT INTO tickets (user_id, event_id, quantity, total_price)
+            VALUES ($1, $2, $3, $4)
+            RETURNING *
+            `, [userId, eventId, quantity, totalPrice]
+        );
 
-            return ticket;
+        return ticket;
     });
 };
 
@@ -169,12 +169,4 @@ export const returnTicketsIfUserIsDeletedModel = async (userId: number) => {
 
         return usersTickets.length;
     });
-}
-
-// verður að vera logged in
-// tix available
-// greiðslu uppl?
-// búa til bókun
-// fækkar fjölda miða í boði
-// skilar staðfestingu á bókun með einkvæmu? auðkenni ???
-// hætta við bókun (>24h fyrir viðburð)
+};

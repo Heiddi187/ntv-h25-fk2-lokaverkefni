@@ -14,15 +14,18 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
         if (!auth || !auth.startsWith('Bearer ')) {
             return res.status(401).json({ error: 'Missing or invalid token' });
         }
+
         const token = auth.slice(7);
         const raw = jwt.verify(token, JWT_SECRET);
         const payload = tokenPayloadSchema.parse(raw);
+
         req.user = {
             id: payload.sub,
             role: payload.role
         };
+
         next();
     } catch {
         return res.status(403).json({ error: 'Invalid or expired token' })
-    }
-}
+    };
+};

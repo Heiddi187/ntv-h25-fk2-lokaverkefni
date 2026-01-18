@@ -21,7 +21,7 @@ const signupUser = {
 const loginUser = {
     email: 'tester@email.com',
     password: 'passedtheword'
-}
+};
 
 describe('GET /api/tickets/user', async () => {
     it('should exist and return 200 status', async () => {
@@ -57,7 +57,6 @@ describe('GET /api/tickets/user', async () => {
         const res = await request(app).get('/api/tickets/user');
         expect(res.status).toBe(401);
     });
-
 });
 
 describe('POST /api/tickets/buy', async () => {
@@ -83,10 +82,9 @@ describe('POST /api/tickets/buy', async () => {
             .send({
                 event_id: 1,
                 quantity: 4 
-            }
-        );
+            });
         expect(res.status).toBe(403);
-    })
+    });
 
     it('should send 401 status if there is no token', async () => {
         const res = await request(app)
@@ -94,10 +92,9 @@ describe('POST /api/tickets/buy', async () => {
             .send({
                 event_id: 1,
                 quantity: 4 
-            }
-        );
+            });
         expect(res.status).toBe(401);
-    })
+    });
 
     it('should reject if trying to buy negative amount of tickets', async () => {
         await request(app).post('/api/users/signup').send(signupUser);
@@ -140,7 +137,7 @@ describe('POST /api/tickets/buy', async () => {
                 event_id: 1,
                 quantity: 4 
             });
-        expect(res.status).toBe(401)
+        expect(res.status).toBe(401);
     });
 
     it('should throw 404 if path is wrong', async () => {
@@ -169,8 +166,7 @@ describe('PATCH /api/tickets/:id/return', async () => {
             .send({
                 event_id: 1,
                 quantity: 5 
-            }
-        );
+            });
         const ticketId = buy.body.id;
         expect(buy.body.quantity).toBe(5)
         const res = await request(app).patch(`/api/tickets/${ticketId}/return`).set('Authorization', `Bearer ${token}`)
@@ -181,18 +177,17 @@ describe('PATCH /api/tickets/:id/return', async () => {
     it('should send 401 status if there is no token', async () => {
         const res = await request(app).patch(`/api/tickets/1/return`);
         expect(res.status).toBe(401);
-    })
+    });
 
     it('should send 403 status and reject if token is wrong', async () => {
         const res = await request(app).patch(`/api/tickets/1/return`).set('Authorization', 'Bearer Invalid token');
         expect(res.status).toBe(403);
-    })
+    });
 
     it('should return tickets to event after refund', async () => {
         await request(app).post('/api/users/signup').send(signupUser);
         const login = await request(app).post('/api/users/login').send(loginUser);
         const token = login.body.token;
-
         const before = await db.one(
             `SELECT tix_available FROM events WHERE id = 1`
         );
@@ -201,26 +196,20 @@ describe('PATCH /api/tickets/:id/return', async () => {
             .post('/api/tickets/buy')
             .set('Authorization', `Bearer ${token}`)
             .send({ event_id: 1, quantity: 3 });
-
         const ticketId = buy.body.id;
-
         // const during = await db.one(
         //     `SELECT tix_available FROM events WHERE id = 1`
         // );
         // console.log('during: ', during) // 1789
-
         const res = await request(app)
             .patch(`/api/tickets/${ticketId}/return`)
             .set('Authorization', `Bearer ${token}`);
-
         expect(res.status).toBe(200);
         expect(res.body.ticket_status).toBe('refunded');
-
         const after = await db.one(
             `SELECT tix_available FROM events WHERE id = 1`
         );
         //console.log('after: ', after) // 1792
-
         expect(after.tix_available).toBe(before.tix_available);
     });
 
@@ -228,7 +217,6 @@ describe('PATCH /api/tickets/:id/return', async () => {
         await request(app).post('/api/users/signup').send(signupUser);
         const login = await request(app).post('/api/users/login').send(loginUser);
         const token = login.body.token;
-
         const tixBefore = await db.one(
             `SELECT tix_available FROM events WHERE id = 2`
         );
@@ -238,22 +226,18 @@ describe('PATCH /api/tickets/:id/return', async () => {
             .send({
                 event_id: 2,
                 quantity: 7 
-            }
-        );
+            });
         // const tixDuring = await db.one(
         //     `SELECT tix_available FROM events WHERE id = 2`
         // );
         // console.log('num of tickets during: ', tixDuring) // 1793
-
         const res = await request(app)
             .delete('/api/users/user')
             .set('Authorization', `Bearer ${token}`);
         expect(res.status).toBe(204);
-        
         const tixAfter = await db.one(
             `SELECT tix_available FROM events WHERE id = 2`
         );
-        
         expect(tixBefore.tix_available).toBe(tixAfter.tix_available);
     });
 
@@ -267,8 +251,7 @@ describe('PATCH /api/tickets/:id/return', async () => {
             .send({
                 event_id: 2,
                 quantity: 7 
-            }
-        );
+            });
         const ticketId = buy.body.id;
         expect(buy.body.quantity).toBe(7)
         await request(app).patch(`/api/tickets/${ticketId}/return`).set('Authorization', `Bearer ${token}`)
@@ -280,7 +263,6 @@ describe('PATCH /api/tickets/:id/return', async () => {
         await request(app).post('/api/users/signup').send(signupUser);
         const login = await request(app).post('/api/users/login').send(loginUser);
         const token = login.body.token;
-
         const in10hours = await db.one(`
             WITH ts AS (SELECT NOW() + INTERVAL '2 hours' AS t)
             INSERT INTO events (title, event_date, event_time, duration, venue_id, price, tix_available)
@@ -298,22 +280,18 @@ describe('PATCH /api/tickets/:id/return', async () => {
             .send({
                 event_id: in10hours.id,
                 quantity: 2 
-            }
-        );
+            });
         const ticketId = buy.body.id;
         const res = await request(app).patch(`/api/tickets/${ticketId}/return`).set('Authorization', `Bearer ${token}`);
-        //console.log(res)
         expect(res.status).toBe(400);
-    })
+    });
 
     it('should reject if event has passed', async () => {
         const login = await request(app).post('/api/users/login').send({
             email: "anna@test.is",
             password: "secret123"
         });
-
         const token = login.body.token;
-
         const expiredEvent = await db.one(`
             INSERT INTO events (title, event_date, event_time, duration, venue_id, price, tix_available)
             VALUES (
@@ -327,26 +305,15 @@ describe('PATCH /api/tickets/:id/return', async () => {
             )
             RETURNING id
         `);
-
         const ticket = await db.one(`
             INSERT INTO tickets (user_id, event_id, quantity, total_price)
             VALUES (1, $1, 2, 200)
             RETURNING id
         `, [expiredEvent.id]);
-
         const res = await request(app)
             .patch(`/api/tickets/${ticket.id}/return`)
             .set('Authorization', `Bearer ${token}`);
-
         expect(res.status).toBe(400);
         expect(res.body.error).toBe('Ticket has expired');
     }); 
 });
-
-
-
-// INSERT INTO events (title, event_date, event_time, duration, venue_id, price, tix_available)
-//             VALUES ('Event already passed',
-//                 '2025-05-08T00:00:00.000Z',
-//                 '00:00', 60, 2, 123, 10)
-//             RETURNING id

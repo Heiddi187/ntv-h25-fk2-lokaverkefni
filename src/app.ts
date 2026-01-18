@@ -9,7 +9,7 @@ export const createApp = () => {
     const app = express();
     app.use(express.json());
 
-    app.use('/api/events', eventRoutes); // validation fyrir ranga slóð ??
+    app.use('/api/events', eventRoutes); 
     app.use('/api/venues', venueRoutes);
     app.use('/api/users', userRoutes);
     app.use('/api/tickets', ticketRoutes);

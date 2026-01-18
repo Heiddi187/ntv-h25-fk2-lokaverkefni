@@ -71,7 +71,7 @@ describe('POST /api/users/signup', () => {
         });
         expect(res.status).toBe(400);
     });
-})
+});
 
 describe('POST /api/users/login', () => {
     it('should login using newly created user', async () => {
@@ -95,7 +95,7 @@ describe('POST /api/users/login', () => {
         });
         expect(res.body.token).toBeDefined();
         expect(res.status).toBe(200);
-    })
+    });
 
     it('should return 401 if password is wrong', async () => {
         const res = await request(app).post('/api/users/login').send({
@@ -103,8 +103,7 @@ describe('POST /api/users/login', () => {
             password: 'secret123456'
         });
         expect(res.status).toBe(401);
-    })
-
+    });
 });
 
 describe('PATCH /api/users/user', () => {
@@ -115,12 +114,10 @@ describe('PATCH /api/users/user', () => {
             password: 'supersecretpassword'
         });
         const token = signup.body.token;
-        
         const res = await request(app)
             .patch('/api/users/user')
             .set('Authorization', `Bearer ${token}`)
-            .send({ name: 'update name' })
-
+            .send({ name: 'update name' });
         expect(res.body.name).toBe('update name');
         expect(res.status).toBe(200);
     });
@@ -132,24 +129,20 @@ describe('PATCH /api/users/user', () => {
             password: 'oldpassword'
         });
         const token = signup.body.token;
-
         await request(app)
             .patch('/api/users/user')
             .set('Authorization', `Bearer ${token}`)
             .send({ password: 'newpassword' });
-
         const newlogin = await request(app).post('/api/users/login').send({
             email: 'testy@test.is',
             password: 'newpassword'
         });
         expect(newlogin.status).toBe(200);
-
         const oldlogin = await request(app).post('/api/users/login').send({
             email: 'testy@test.is',
             password: 'oldpassword'
         });
         expect(oldlogin.status).toBe(401);
-        
     });
 
     it('should reject if no authorization', async () => {
@@ -159,23 +152,19 @@ describe('PATCH /api/users/user', () => {
             password: 'supersecretpassword'
         });
         const token = signup.body.token;
-        
         const res = await request(app)
             .patch('/api/users/user')
             //.set('Authorization', `Bearer ${token}`)
             .send({ name: 'update name' })
-
         expect(res.status).toBe(401);
     });
 
     it('should reject if token is expired', async () => {
         const token = jwt.sign({ sub: 1, role: 'user' }, process.env.JWT_SECRET!, { expiresIn: '-1s' });
-        
         const res = await request(app)
             .patch('/api/users/user')
             .set('Authorization', `Bearer ${token}`)
             .send({ name: 'update name' })
-
         expect(res.status).toBe(403);
     });
 
@@ -186,14 +175,12 @@ describe('PATCH /api/users/user', () => {
             password: 'supersecretpassword'
         });
         const token = signup.body.token;
-        
         const res = await request(app)
             .patch('/api/users/user')
             .set('Authorization', `Bearer ${token}`)
             .send({ password: 1234567890 });
-
         expect(res.status).toBe(400);
-    })
+    });
 });
 
 describe('DELETE /api/users/user', () => {
@@ -204,13 +191,10 @@ describe('DELETE /api/users/user', () => {
             password: 'supersecretpassword'
         });
         const token = signup.body.token;
-        
         const res = await request(app)
             .delete('/api/users/user')
             .set('Authorization', `Bearer ${token}`);
-
         expect(res.status).toBe(204);
-
         const login = await request(app).post('/api/users/login').send({
             email: 'testy@test.is',
             password: 'supersecretpassword'
@@ -218,18 +202,16 @@ describe('DELETE /api/users/user', () => {
         expect(login.status).toBe(401);
     });
 
-    it('should reject if not authorized', async () => {
+    it('should reject if you try with no authorization', async () => {
         const signup = await request(app).post('/api/users/signup').send({
             name: 'Testing',
             email: 'testy@test.is',
             password: 'supersecretpassword'
         });
         const token = signup.body.token;
-        
         const res = await request(app)
-            .delete('/api/users/user')
-
+            .delete('/api/users/user');
+            //.set('Authorization', `Bearer ${token}`);
         expect(res.status).toBe(401);
-    })
-})
-
+    });
+});
